@@ -61,3 +61,6 @@ class DB:
         conn = self.connect()
         df.to_sql(table, con = engine, if_exists = 'append', index = False)
         conn.close()
+
+if __name__ == '__main__':
+    DB().createTables()
