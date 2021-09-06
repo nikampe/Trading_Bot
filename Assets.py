@@ -92,7 +92,6 @@ class Coin:
         else:
             DB().postRequest(train_data_new, self.dbname_train)
             print('Training data submitted to DB for', self.name)
-        print(train_data_new)
         return train_data_new
 
 BTC = Coin('Bitcoin', 1, 'BTC', 'XBT', 'USD', 'data_BTC', 'train_data_BTC')
