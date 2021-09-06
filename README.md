@@ -1,5 +1,5 @@
 # Trading_Bot
-Trading Bot using Time Series Analysis
+Trading Bot using Chart Pattern & Time Series Analysis
 
 ## Setup
 1. MySQL setup on your local device
