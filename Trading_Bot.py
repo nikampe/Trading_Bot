@@ -128,14 +128,10 @@ def CNNForecast():
         # Fully Connected NN - Model Prediction & Forecast
         horizon = 10
         prices_forecasted = np.empty(horizon+p)
-        print(prices_forecasted)
         prices_forecasted[0:p] = prices[(n-p):n] 
-        print(prices_forecasted)
         for t in range(p, horizon+p):
             prices_forecasted[t] = model.predict([prices_forecasted[t-1]])
-            print(prices_forecasted)
         prices_forecasted = prices_forecasted[p:(n+p)]
-        print(prices_forecasted)
         # Fully Connected NN - Descaling
         prices = prices_min + prices * (prices_max - prices_min)
         prices_predicted = model.predict(df_prices.iloc[:,0:1])
