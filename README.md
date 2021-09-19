@@ -15,7 +15,6 @@ Trading Bot using Chart Pattern & Time Series Analysis
 2. Run Trading_Bot.py
 
 ## Upcoming projects
-1. Hyperparameter Tuning on the neural networks forecasting methods (Fully-Connected NN, Recurrent NN, LSTM)
-2. Cloud Deployment on AWS with 5min run schedule + Cloud datavase on AWS
-3. Adaptation to the stock market with the top 50 S&P500 stocks
-4. Portfolio dashboard with data visualizations using Dash
+1. Cloud deployment on AWS with 5min run schedule + Cloud database on AWS
+2. Adaptation to the stock market with the top 50 S&P500 stocks
+3. Portfolio dashboard with data visualizations using Dash
