@@ -11,7 +11,7 @@ Trading Bot using Chart Pattern & Time Series Analysis
 7. In krakenapi.py: Insert the API_KEY_PUBL and API_KEY_PRIV
 
 ## Run
-1. Activate the virtual environment: source VIRTUAL_ENV/bin/activate
+1. Activate the virtual environment: source VIRTUAL_ENV/bin/activate 
 2. Run Trading_Bot.py
 
 ## Upcoming projects
