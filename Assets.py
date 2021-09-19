@@ -5,7 +5,7 @@ import datetime as dt
 
 from DATABASE.db import DB
 
-ROLLING_PERIOD = '21d'
+ROLLING_PERIOD = '30d'
 ROLLING_INTERVAL = '5m'
 TRAINING_PERIOD = '3y'
 TRAINING_INTERVAL = '1d'
@@ -38,10 +38,13 @@ class Coin:
     def getTrainingData(self):
         train_data = DB().getRequest(table = self.dbname_train, columns = '*')
         return train_data
-    def returns(self, data):
+    def returns(self, data, identifier):
         intervals_per_day = 288
-        data['1d_Return'] = data['Close'].pct_change(periods = intervals_per_day)
-        data['5min_Return'] = data['Close'].pct_change(periods = 1)
+        if identifier == 'data':
+            data['1d_Return'] = data['Close'].pct_change(periods = intervals_per_day)
+            data['5min_Return'] = data['Close'].pct_change(periods = 1)
+        if identifier == 'training_data':
+            data['Return'] = data['Close'].pct_change(periods = 1)
         return data
     def movingAverages(self, data, periods):
         intervals_per_day = 288
@@ -61,7 +64,7 @@ class Coin:
         data_new['Datetime'] = data_new['Datetime'].dt.tz_convert('Europe/Zurich')
         data_new['Datetime'] = data_new['Datetime'].dt.strftime('%Y/%m/%d %H:%M:%S')
         data_new.drop(data_new.tail(1).index, inplace = True)
-        data = self.returns(data_new)
+        data = self.returns(data_new, 'data')
         data = self.movingAverages(data, MA_PERIODS)
         for i in range(0, len(data)):
             if data.loc[i, 'Datetime'] in data_old['Datetime'].to_numpy():
@@ -82,16 +85,14 @@ class Coin:
         train_data_new.reset_index(inplace = True)
         train_data_new['Date'] = train_data_new['Date'].dt.strftime('%Y/%m/%d')
         train_data_new.drop(train_data_new.tail(1).index, inplace = True)
+        train_data_new = self.returns(train_data_new, 'training_data')
         for i in range(0, len(train_data_new)):
             if train_data_new.loc[i, 'Date'] in train_data_old['Date'].to_numpy():
                 train_data_new.drop(train_data_new.loc[i].name, inplace = True)
             else:
                 pass
-        if train_data_new.isnull().values.any():
-            print('Error: NaN values in the coin training data request for', self.name)
-        else:
-            DB().postRequest(train_data_new, self.dbname_train)
-            print('Training data submitted to DB for', self.name)
+        DB().postRequest(train_data_new, self.dbname_train)
+        print('Training data submitted to DB for', self.name)
         return train_data_new
 
 BTC = Coin('Bitcoin', 1, 'BTC', 'XBT', 'USD', 'data_BTC', 'train_data_BTC')

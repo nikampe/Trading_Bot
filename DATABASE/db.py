@@ -2,14 +2,13 @@ import mysql.connector
 from mysql.connector import errorcode
 from sqlalchemy import create_engine
 import pandas as pd
-import numpy as np
 
 from DATABASE.tables import TABLES
 
-HOST = "XXXXXXXXXXXXXXXXXXXXX"
-USER = "XXXXXXXXXXXXXXXXXXXXX"
-PASSWORD = "XXXXXXXXXXXXXXXXXXXXX"
-DB_NAME = "XXXXXXXXXXXXXXXXXXXXX"
+HOST = "XXXXXXXXXXX"
+USER = "XXXXXXXXXXX"
+PASSWORD = "XXXXXXXXXXX"
+DB_NAME = "XXXXXXXXXXX"
 
 class DB:
     def __init__(self):
