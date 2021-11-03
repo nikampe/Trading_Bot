@@ -1,5 +1,5 @@
 # Trading_Bot
-Trading Bot using Chart Pattern & Time Series Analysis
+Crypto Trading Bot using Chart Pattern & Time Series Analysis
 
 ## Setup
 1. MySQL setup on your local device
