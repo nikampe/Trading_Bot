@@ -3,17 +3,11 @@ import numpy as np
 import datetime as dt
 
 from API.krakenapi import CoinAPI
-from DATABASE.db import DB
-from Assets import BTC
-from Assets import ETH
-from Assets import ADA
+from DATABASE.db import MySQL_DB, Mongo_DB
 
 class Portfolio:
-    def __init__(self):
-        self.BTC = BTC
-        self.ETH = ETH
-        self.ADA = ADA
-        self.coins = [BTC, ETH, ADA]
+    def __init__(self, coins):
+        self.coins = coins
     def getKrakenPortfolio(self):
         resp = CoinAPI().getBalance()
         resp = resp['result']
@@ -39,14 +33,38 @@ class Portfolio:
         detail_portfolio['Total_Value'] = detail_portfolio['Cash'] + total_value
         return detail_portfolio
     def updatePortfolio(self):
-        detail_portfolio = self.detailPortfolio()
-        detail_portfolio.reset_index(inplace = True)
-        detail_portfolio.rename(columns = {'index': 'Datetime'}, inplace = True)
-        detail_portfolio.drop('Cash', axis = 1, inplace = True)
-        DB().postRequest(detail_portfolio, 'coin_portfolio')
-    def getDBPortfolio(self):
+        detail_portfolio_SQL = self.detailPortfolio()
+        detail_portfolio_SQL.reset_index(inplace = True)
+        detail_portfolio_SQL.rename(columns = {'index': 'Datetime'}, inplace = True)
+        detail_portfolio_SQL.drop('Cash', axis = 1, inplace = True)
+        try:
+            MySQL_DB().postRequest(detail_portfolio_SQL, 'coin_portfolio')
+            print(f'Portfolio overview uploaded to MySQL.')
+        except:
+            print(f'Error in MySQL upload')
+        for i in detail_portfolio_SQL.index:
+            detail_portfolio_JSON = {
+                'Datetime' : detail_portfolio_JSON.loc[i, 'Datetime'],
+                'BTC' : detail_portfolio_JSON.loc[i, 'BTC'],
+                'BTC_Value' : detail_portfolio_JSON.loc[i, 'BTC_Value'],
+                'BTC_Cash' : detail_portfolio_JSON.loc[i, 'BTC_Cash'],
+                'BTC_Weight' : detail_portfolio_JSON.loc[i, 'BTC_Weight'],
+                'ETH' : detail_portfolio_JSON.loc[i, 'ETH'],
+                'ETH_Value' : detail_portfolio_JSON.loc[i, 'ETH_Value'],
+                'ETH_Cash' : detail_portfolio_JSON.loc[i, 'ETH_Cash'],
+                'ETH_Weight' : detail_portfolio_JSON.loc[i, 'ETH_Weight'],
+                'ADA' : detail_portfolio_JSON.loc[i, 'ADA'],
+                'ADA_Value' : detail_portfolio_JSON.loc[i, 'ADA_Value'],
+                'ADA_Cash' : detail_portfolio_JSON.loc[i, 'ADA_Cash'],
+                'ADA_Weight' : detail_portfolio_JSON.loc[i, 'ADA_Weight'],
+                'Total_Value': detail_portfolio_JSON.loc[i, 'Total_Value']
+            }
+            try:
+                Mongo_DB().postRequest(detail_portfolio_JSON, 'coin_portfolio')
+                print(f'Trade overview uploaded to MongoDB.')
+            except:
+                print(f'Error in MongoDB upload')
+    def getPortfolio(self):
         self.updatePortfolio()
-        portfolio = DB().getRequest(table = 'coin_portfolio', columns = '*')
+        portfolio = MySQL_DB().getRequest(table = 'coin_portfolio', columns = '*')
         return portfolio
-
-Portfolio().updatePortfolio()

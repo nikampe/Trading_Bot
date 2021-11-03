@@ -1,16 +1,23 @@
+import pandas as pd
 import mysql.connector
 from mysql.connector import errorcode
 from sqlalchemy import create_engine
-import pandas as pd
+from pymongo import MongoClient
+import pymongo
 
 from DATABASE.tables import TABLES
+from DATABASE.collections import COLLECTIONS
 
-HOST = "XXXXXXXXXXX"
-USER = "XXXXXXXXXXX"
-PASSWORD = "XXXXXXXXXXX"
-DB_NAME = "XXXXXXXXXXX"
+# MySQL
+HOST = "XXXXXXXXXXXX"
+USER = "XXXXXXXXXXXX"
+PASSWORD = "XXXXXXXXXXXX"
+DB_NAME = "XXXXXXXXXXXX"
 
-class DB:
+# MongoDB
+CONNECTION_STRING = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+
+class MySQL_DB:
     def __init__(self):
         self.host = HOST
         self.user = USER
@@ -55,11 +62,44 @@ class DB:
         response = pd.read_sql(query, conn)
         conn.close()
         return response
+    def getLimitedRequest(self, table, columns, sort_column, limit):
+        conn = self.connect()
+        query = f"SELECT {columns} FROM {table} ORDER BY {sort_column} DESC LIMIT {limit};"
+        response = pd.read_sql(query, conn)
+        conn.close()
+        return response
     def postRequest(self, df, table):
         engine = create_engine('mysql+mysqlconnector://'+ USER + ':' + PASSWORD + '@' + HOST + '/' + DB_NAME)
         conn = self.connect()
         df.to_sql(table, con = engine, if_exists = 'append', index = False)
         conn.close()
 
+class Mongo_DB:
+    def __init__(self):
+        self.conn = CONNECTION_STRING
+        self.connections = COLLECTIONS
+    def get_database(self):
+        client = MongoClient(self.conn)
+        db = client['Trading_Bot']
+        return db
+    def createCollections(self):
+        db = self.get_database()
+        existing_collections = db.list_collection_names()
+        print(existing_collections)
+        for collection in self.connections:
+            if collection in existing_collections:
+                print(f'Collection {collection} already exists.')
+            else:
+                try:
+                    db.create_collection(name = collection)
+                    print(f'Collection {collection} successfully created.')
+                except:
+                    print('Error.')
+    def getRequest(self):
+        pass
+    def postRequest(self, data, collection):
+        db = self.get_database()
+        db[collection].insert_one(data)
+
 if __name__ == '__main__':
-    DB().createTables()
+    Mongo_DB.createCollections()

@@ -1,0 +1,1 @@
+COLLECTIONS = ['coin_portfolio', 'coin_tickers', 'data_ADA', 'data_BTC', 'data_ETH', 'portfolio', 'trades', 'train_data_ADA', 'train_data_BTC', 'train_data_ETH']
