@@ -102,4 +102,5 @@ class Mongo_DB:
         db[collection].insert_one(data)
 
 if __name__ == '__main__':
-    Mongo_DB.createCollections()
+    MySQL_DB().createTables()
+    Mongo_DB().createCollections()
